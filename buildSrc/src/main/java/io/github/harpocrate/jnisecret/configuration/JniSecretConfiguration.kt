@@ -27,7 +27,7 @@ open class JniSecretConfiguration(
     }
 
     fun productFlavors(configureClosure: Closure<*>) {
-        this.productFlavors?.configure(configureClosure)
+        this.productFlavors.configure(configureClosure)
      }
 
     fun generateCMake(generate: Boolean) {

@@ -44,7 +44,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
         val functions = flavors.getSecrets()
             .let { secretsFlavor ->
                 val mutableSecret = secretsFlavor.toMutableMap()
-                configuration?.defaultConfig?.getSecrets()?.forEach { secretDefault ->
+                configuration.defaultConfig.getSecrets().forEach { secretDefault ->
                     if(!mutableSecret.containsKey(secretDefault.key)) {
                         mutableSecret[secretDefault.key] = secretDefault.value
                     }
@@ -55,7 +55,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
 
             .joinToString("\n\t")
 
-        val jni = JniInterfaceUtils.getJniInterface(configuration!!.packagename, configuration!!.className, Config.SO_LIB_NAME, functions)
+        val jni = JniInterfaceUtils.getJniInterface(configuration.packagename, configuration.className, Config.SO_LIB_NAME, functions)
 
         return jni
     }
@@ -67,7 +67,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
         if(!dir.exists()) {
             dir.mkdirs()
         }
-        val file = File(dir, "${configuration!!.className}.kt")
+        val file = File(dir, "${configuration.className}.kt")
         file.writeText(content)
         file.createNewFile()
     }
