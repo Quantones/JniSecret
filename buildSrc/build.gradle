@@ -22,6 +22,7 @@ apply plugin: 'java-gradle-plugin'
 apply plugin: 'kotlin'
 apply plugin: 'groovy'
 apply plugin: 'com.gradle.plugin-publish'
+apply plugin: 'maven-publish'
 
 repositories {
     mavenCentral()
@@ -35,6 +36,7 @@ gradlePlugin {
     plugins {
         jniSecret {
             id = "$publish.jniSecret.id"
+            displayName = "JniSecret Plugin"
             description = "Store your secret using the Android NDK"
             implementationClass = "$publish.jniSecret.implementationClass"
         }
@@ -42,20 +44,10 @@ gradlePlugin {
 }
 
 pluginBundle {
-    // These settings are set for the whole plugin bundle
     website = 'https://github.com/Quantones/JniSecret'
     vcsUrl = 'https://github.com/Quantones/JniSecret'
-
-    // tags and description can be set for the whole bundle here, but can also
-    // be set / overridden in the config for specific plugins
     description = 'Store your secret using the Android NDK'
-
-    plugins {
-        jniSecret {
-            description = "Store your secret using the Android NDK"
-            tags = ['android', 'jni', 'secret', 'apiKey', 'plugin']
-        }
-    }
+    tags = ['android', 'jni', 'secret', 'apiKey', 'plugin']
 }
 
 dependencies {
