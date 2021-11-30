@@ -1,6 +1,9 @@
+apply from: "../gradle/version.gradle"
+
 apply plugin: 'java-gradle-plugin' // Allows us to create and configure custom plugins
 apply plugin: 'kotlin' //Needed as we'll write our plugin in Kotlin
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
 
 buildscript {
     ext.kotlin_version = '1.4.31'
@@ -29,7 +32,19 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    // Android gradle plugin will allow us to access Android specific features
-    implementation "com.android.tools.build:gradle:$gradle_version"
+    implementation lib.kotlin_std_lib
+    implementation lib.gradle
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+                groupId = publish.groupId
+                artifactId = publish.artifactId
+                version = publish.version
+            }
+        }
+    }
 }
