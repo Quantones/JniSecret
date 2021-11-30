@@ -1,4 +1,4 @@
-package com.harpocrate.jnisecret
+package io.github.harpocrate.jnisecret
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension

@@ -1,4 +1,4 @@
-package com.harpocrate.jnisecret.utils
+package io.github.harpocrate.jnisecret.utils
 
 object CppUtils {
 

@@ -1,10 +1,9 @@
-package com.harpocrate.jnisecret.task
+package io.github.harpocrate.jnisecret.task
 
-import com.harpocrate.jnisecret.configuration.JniSecretConfiguration
-import com.harpocrate.jnisecret.configuration.JniSecretEntries
-import com.harpocrate.jnisecret.utils.CMakeListsUtils
-import com.harpocrate.jnisecret.utils.Config
-import com.harpocrate.jnisecret.utils.GitIgnoreUtils
+import io.github.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.harpocrate.jnisecret.utils.CMakeListsUtils
+import io.github.harpocrate.jnisecret.utils.Config
+import io.github.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional

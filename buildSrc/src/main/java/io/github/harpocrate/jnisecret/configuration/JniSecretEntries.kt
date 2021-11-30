@@ -1,4 +1,4 @@
-package com.harpocrate.jnisecret.configuration
+package io.github.harpocrate.jnisecret.configuration
 
 open class JniSecretEntries(val name: String) {
 

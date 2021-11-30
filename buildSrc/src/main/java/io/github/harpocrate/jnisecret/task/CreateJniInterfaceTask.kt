@@ -1,8 +1,8 @@
-package com.harpocrate.jnisecret.task
+package io.github.harpocrate.jnisecret.task
 
-import com.harpocrate.jnisecret.configuration.JniSecretConfiguration
-import com.harpocrate.jnisecret.utils.Config
-import com.harpocrate.jnisecret.utils.JniInterfaceUtils
+import io.github.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.harpocrate.jnisecret.utils.Config
+import io.github.harpocrate.jnisecret.utils.JniInterfaceUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input

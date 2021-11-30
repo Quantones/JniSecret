@@ -15,7 +15,12 @@ ext.lib = [
 ]
 
 ext.publish = [
-        groupId : 'com.harpocrate.jnisecret',
+        group : 'io.github.harpocrate',
         artifactId : 'jni-secret',
-        version : '0.0.1-beta'
+        version : '0.0.1-beta',
+
+        jniSecret : [
+                id : 'jni-secret',
+                implementationClass : 'io.github.harpocrate.jnisecret.JniSecretPlugin'
+        ]
 ]

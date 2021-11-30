@@ -1,4 +1,4 @@
-package com.harpocrate.jnisecret.task
+package io.github.harpocrate.jnisecret.task
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input

@@ -3,7 +3,7 @@ apply from: "../gradle/version.gradle"
 apply plugin: 'java-gradle-plugin' // Allows us to create and configure custom plugins
 apply plugin: 'kotlin' //Needed as we'll write our plugin in Kotlin
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
+apply plugin: 'com.gradle.plugin-publish'
 
 buildscript {
     ext.kotlin_version = '1.4.31'
@@ -11,10 +11,15 @@ buildscript {
     repositories {
         mavenCentral()
         google()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "com.android.tools.build:gradle:$gradle_version"
+        classpath "com.gradle.publish:plugin-publish-plugin:0.18.0"
     }
 }
 repositories {
@@ -22,11 +27,14 @@ repositories {
     google()
 }
 
+version = "$publish.version"
+group = "$publish.group"
+
 gradlePlugin {
     plugins {
-        create("JniSecret") {
-            id = "jni-secret"
-            implementationClass = "com.harpocrate.jnisecret.JniSecretPlugin"
+        create("jni-secret") {
+            id = "$publish.jniSecret.id"
+            implementationClass = "$publish.jniSecret.implementationClass"
         }
     }
 }
@@ -34,17 +42,4 @@ gradlePlugin {
 dependencies {
     implementation lib.kotlin_std_lib
     implementation lib.gradle
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                from components.java
-                groupId = publish.groupId
-                artifactId = publish.artifactId
-                version = publish.version
-            }
-        }
-    }
 }

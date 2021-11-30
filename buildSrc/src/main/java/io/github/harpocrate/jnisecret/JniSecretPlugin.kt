@@ -1,10 +1,10 @@
-package com.harpocrate.jnisecret
+package io.github.harpocrate.jnisecret
 
-import com.harpocrate.jnisecret.configuration.JniSecretConfiguration
-import com.harpocrate.jnisecret.configuration.JniSecretEntries
-import com.harpocrate.jnisecret.task.CreateCMakeListsTask
-import com.harpocrate.jnisecret.task.CreateCppTask
-import com.harpocrate.jnisecret.task.CreateJniInterfaceTask
+import io.github.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.harpocrate.jnisecret.configuration.JniSecretEntries
+import io.github.harpocrate.jnisecret.task.CreateCMakeListsTask
+import io.github.harpocrate.jnisecret.task.CreateCppTask
+import io.github.harpocrate.jnisecret.task.CreateJniInterfaceTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File

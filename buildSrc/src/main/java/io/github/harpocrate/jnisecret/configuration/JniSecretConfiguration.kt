@@ -1,6 +1,6 @@
-package com.harpocrate.jnisecret.configuration
+package io.github.harpocrate.jnisecret.configuration
 
-import com.harpocrate.jnisecret.utils.Config
+import io.github.harpocrate.jnisecret.utils.Config
 import groovy.lang.Closure
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer

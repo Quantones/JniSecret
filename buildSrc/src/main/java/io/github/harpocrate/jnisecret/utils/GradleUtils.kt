@@ -1,4 +1,4 @@
-package com.harpocrate.jnisecret.utils
+package io.github.harpocrate.jnisecret.utils
 
 import org.gradle.api.Project
 import java.util.regex.Pattern
