@@ -22,7 +22,7 @@ ext.publish = [
         version : '0.0.1',
 
         jniSecret : [
-                id : 'jni-secret',
+                id : 'io.github.harpocrate.jni-secret',
                 implementationClass : 'io.github.harpocrate.jnisecret.JniSecretPlugin'
         ]
 ]

@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'jni-secret'
+    id 'io.github.harpocrate.jni-secret'
     //id 'jni-secret-groovy'
 }
 

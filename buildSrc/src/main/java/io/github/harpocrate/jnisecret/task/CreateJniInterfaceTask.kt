@@ -62,7 +62,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
 
     private fun saveJniInterface(configuration: JniSecretConfiguration, content: String) {
         val packageDir = configuration.getPackageName().replace('.', '/').plus("/")
-        val dir = File("${project.projectDir}${Config.SRC_DIR}${Config.JAVA_DIR}$packageDir")
+        val dir = File("${project.projectDir}${Config.SRC_DIR}${Config.JAVA_DIR}/$packageDir")
 
         if(!dir.exists()) {
             dir.mkdirs()
