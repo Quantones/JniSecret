@@ -19,7 +19,7 @@ ext.lib = [
 ext.publish = [
         group : 'io.github.harpocrate',
         artifactId : 'jni-secret',
-        version : '0.0.1-beta',
+        version : '0.0.1',
 
         jniSecret : [
                 id : 'jni-secret',
