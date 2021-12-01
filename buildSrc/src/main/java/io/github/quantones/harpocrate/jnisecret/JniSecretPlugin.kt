@@ -1,10 +1,10 @@
-package io.github.harpocrate.jnisecret
+package io.github.quantones.harpocrate.jnisecret
 
-import io.github.harpocrate.jnisecret.configuration.JniSecretConfiguration
-import io.github.harpocrate.jnisecret.configuration.JniSecretEntries
-import io.github.harpocrate.jnisecret.task.CreateCMakeListsTask
-import io.github.harpocrate.jnisecret.task.CreateCppTask
-import io.github.harpocrate.jnisecret.task.CreateJniInterfaceTask
+import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretEntries
+import io.github.quantones.harpocrate.jnisecret.task.CreateCMakeListsTask
+import io.github.quantones.harpocrate.jnisecret.task.CreateCppTask
+import io.github.quantones.harpocrate.jnisecret.task.CreateJniInterfaceTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -72,6 +72,7 @@ class JniSecretPlugin : Plugin<Project> {
                 "buildCMake${flavorName[0].toUpperCase() + flavorName.substring(1)}"
 
             if(configuration.generateCMake) {
+
                 project.tasks.getByName(preBuildTask) { t ->
                     t.dependsOn(buildCmakeTask)
                 }
@@ -95,9 +96,10 @@ class JniSecretPlugin : Plugin<Project> {
         //
         // Modify project
         //
-        if(configuration.generateCMake) {
+        //if(configuration.generateCMake) {
             project.android().externalNativeBuild.cmake.path = File("${project.projectDir}/CMakeLists.txt")
-        }
+        //}
+
 
         // val srcSet = project.properties["sourceSets"]
         // println("SourceSet $srcSet")

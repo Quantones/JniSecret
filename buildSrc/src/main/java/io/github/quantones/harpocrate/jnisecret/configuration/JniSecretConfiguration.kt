@@ -1,7 +1,8 @@
-package io.github.harpocrate.jnisecret.configuration
+package io.github.quantones.harpocrate.jnisecret.configuration
 
-import io.github.harpocrate.jnisecret.utils.Config
+import io.github.quantones.harpocrate.jnisecret.utils.Config
 import groovy.lang.Closure
+import io.github.quantones.harpocrate.jnisecret.utils.StoringType
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 
@@ -13,6 +14,7 @@ open class JniSecretConfiguration(
     var className: String = "SecretKeys"
     var generateCMake: Boolean = false
     var defaultConfig: JniSecretEntries = JniSecretEntries(Config.DEFAULT_CONFIG_NAME)
+    var cppStoringType: StoringType = StoringType.OBFUSCATED
 
     fun packageName(name: String) {
         this.packagename = name
@@ -20,6 +22,10 @@ open class JniSecretConfiguration(
 
     fun getPackageName(): String {
         return this.packagename
+    }
+
+    fun getStoringType(): StoringType {
+        return cppStoringType
     }
 
     fun className(name: String) {
@@ -37,4 +43,10 @@ open class JniSecretConfiguration(
     fun defaultConfig(config: Action<JniSecretEntries>) {
         config.execute(this.defaultConfig)
     }
+
+    fun storingType(type: String) {
+        this.cppStoringType = StoringType.getByValue(type)
+    }
+
+
 }

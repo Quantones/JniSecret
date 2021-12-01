@@ -1,9 +1,9 @@
-package io.github.harpocrate.jnisecret.task
+package io.github.quantones.harpocrate.jnisecret.task
 
-import io.github.harpocrate.jnisecret.configuration.JniSecretConfiguration
-import io.github.harpocrate.jnisecret.utils.Config
-import io.github.harpocrate.jnisecret.utils.CppUtils
-import io.github.harpocrate.jnisecret.utils.GitIgnoreUtils
+import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.quantones.harpocrate.jnisecret.utils.Config
+import io.github.quantones.harpocrate.jnisecret.utils.CppUtils
+import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
@@ -50,7 +50,7 @@ open class CreateCppTask: DefaultTask() {
             }
             .map { Pair(it.key, it.value) }
 
-        return CppUtils.getCppContent(packageName, className, values)
+        return CppUtils.getCppContent(packageName, className, values, configuration.getStoringType())
     }
 
     private fun saveCppFile(content: String) {
