@@ -44,10 +44,10 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = 'https://github.com/Quantones/JniSecret'
-    vcsUrl = 'https://github.com/Quantones/JniSecret'
+    website = publish.website
+    vcsUrl = publish.website
     description = 'Store your secret using the Android NDK'
-    tags = ['android', 'jni', 'secret', 'apiKey', 'plugin']
+    tags = ['android', 'jni', 'secret', 'plugin', 'ndk', 'security']
 }
 
 dependencies {

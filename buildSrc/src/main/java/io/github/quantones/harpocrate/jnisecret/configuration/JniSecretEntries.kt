@@ -1,4 +1,4 @@
-package io.github.harpocrate.jnisecret.configuration
+package io.github.quantones.harpocrate.jnisecret.configuration
 
 open class JniSecretEntries(val name: String) {
 

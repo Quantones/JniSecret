@@ -1,4 +1,4 @@
-package io.github.harpocrate.jnisecret.utils
+package io.github.quantones.harpocrate.jnisecret.utils
 
 object Config {
 

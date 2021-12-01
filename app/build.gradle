@@ -1,8 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'io.github.harpocrate.jni-secret'
-    //id 'jni-secret-groovy'
+    id 'io.github.quantones.harpocrate.jni-secret'
 }
 
 android {
@@ -51,6 +50,7 @@ jniSecret {
     packageName "com.harpocrate.sample"
     className "JniSecret"
     generateCMake true
+    storingType "basic"
 
     defaultConfig {
         secret("shared", readProperty("SECRET_SHARED"))
