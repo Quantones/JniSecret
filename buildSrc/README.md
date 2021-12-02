@@ -15,7 +15,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "io.github.quantones.harpocrate:jni-secret:0.0.2"
+    classpath "io.github.quantones.harpocrate:jni-secret:0.0.3"
   }
 }
 ```
