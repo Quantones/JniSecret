@@ -77,7 +77,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
 
     private fun setGitIgnore(configuration: JniSecretConfiguration) {
         val packageDir = configuration.getPackageName().replace('.', '/').plus("/")
-        val fileLocation = ".${Config.SRC_DIR}${Config.JAVA_DIR}$packageDir${configuration.className}.kt"
+        val fileLocation = "${Config.SRC_DIR}${Config.JAVA_DIR}$packageDir${configuration.className}.kt"
         GitIgnoreUtils.addToProjectGitIgnore(
             project,
             fileLocation
