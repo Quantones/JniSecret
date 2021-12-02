@@ -34,10 +34,6 @@ The plugin take those keys and values and create a cpp file into your src/main f
 
 CMakelists.txt and .cpp file will be ignored at versioning by a .gitingore create in each folder they are.
 
-**TODO**: add the JNI interface into the .gitignore.
-
-**TODO**: merge all .gitignore content into the base .gitignore project.
-
 ## Configuration
 
 First step is to store your data in the local.properties to not be versionned:
