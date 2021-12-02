@@ -1,4 +1,4 @@
 build/
-./src/main/cpp/jni-secret/
-./src/main/java/com/harpocrate/sample/JniSecret.kt
+/src/main/cpp/jni-secret/
 CMakeLists.txt
+/src/main/java/com/harpocrate/sample/JniSecret.kt

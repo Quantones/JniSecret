@@ -1,5 +1,5 @@
 
-#JniSecret
+# JniSecret
 
 JniSecret is an Android gradle plugin which help you to store your sensitive data into a native cpp file which will be compile by the NDK. It avoid you to put data like ApiKey or secrets into the BuildConfig class which will be easily readable in your apk.
 
@@ -34,8 +34,9 @@ The plugin take those keys and values and create a cpp file into your src/main f
 
 CMakelists.txt and .cpp file will be ignored at versioning by a .gitingore create in each folder they are.
 
-**TODO**: add the JNI interface into the .gitignore
-**TODO**: merge all .gitignore content into the base .gitignore project
+**TODO**: add the JNI interface into the .gitignore.
+
+**TODO**: merge all .gitignore content into the base .gitignore project.
 
 ## Configuration
 
@@ -127,7 +128,19 @@ jniSecret {
 }
 ```
 
+Then click on *Make project*
+
 As you can see above, the method to call to create a new entry is *secret("key", "value")*. The data in the defaultConfig are vailable for all variants but it could be overrided for only one variant if you need.
+
+**Recommandation**
+
+Choose a non relevant names for your *className* and *key* because each method name will appear in your .so file. It is better to not letting know you are storing secrets here.
+Example of methods logs using the command line *strings libMyClass.so*:
+
+```
+Java_com_myproject_mypackage_MyClass_key_1
+Java_com_myproject_mypackage_MyClass_key_2
+```
 
 **WARNING If you already using the NDK in your project**
 
