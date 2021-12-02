@@ -1,6 +1,5 @@
 package io.github.quantones.harpocrate.jnisecret.task
 
-import com.android.build.gradle.internal.cxx.logging.createLoggingMessage
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
 import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
@@ -58,7 +57,10 @@ open class CreateJniInterfaceTask: DefaultTask() {
 
             .joinToString("\n\t")
 
-        val jni = JniInterfaceUtils.getJniInterface(configuration.packagename, configuration.className, Config.SO_LIB_NAME, functions)
+        val jni = JniInterfaceUtils.getJniInterface(
+            configuration.packagename,
+            configuration.className,
+            functions)
 
         return jni
     }

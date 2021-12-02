@@ -28,11 +28,11 @@ object JniInterfaceUtils {
         return jniFunction.replace(keyHolder, key)
     }
 
-    fun getJniInterface(pacakgeName: String, className: String, libraryName: String, functions: String): String {
+    fun getJniInterface(pacakgeName: String, className: String, functions: String): String {
         return interfaceContent
             .replace(packageNameHolder, pacakgeName)
             .replace(classNameHolder, className)
-            .replace(libraryNameHolder, libraryName)
+            .replace(libraryNameHolder, className)
             .replace(functionsHolder, functions)
     }
 

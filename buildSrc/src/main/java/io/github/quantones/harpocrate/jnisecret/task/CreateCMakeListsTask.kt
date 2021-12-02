@@ -5,6 +5,7 @@ import io.github.quantones.harpocrate.jnisecret.utils.CMakeListsUtils
 import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
@@ -18,8 +19,10 @@ open class CreateCMakeListsTask: DefaultTask() {
 
     @TaskAction
     fun createCMakeLists() {
+        val safeConfiguration = configuration ?: throw GradleException("No configuration found")
         val content = CMakeListsUtils
             .getFileContent(
+                safeConfiguration.className,
                 "${project.projectDir}${Config.SRC_DIR}${Config.CPP_DIR}",
                 Config.CPP_FILENAME
             )
@@ -31,6 +34,8 @@ open class CreateCMakeListsTask: DefaultTask() {
         }
 
         if(!file.readText().contains(content)) {
+            file.delete()
+            file.createNewFile()
             file.appendText(content)
         }
 
