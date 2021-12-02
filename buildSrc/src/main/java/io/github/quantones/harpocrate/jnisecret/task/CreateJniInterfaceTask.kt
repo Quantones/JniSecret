@@ -1,7 +1,9 @@
 package io.github.quantones.harpocrate.jnisecret.task
 
+import com.android.build.gradle.internal.cxx.logging.createLoggingMessage
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
 import io.github.quantones.harpocrate.jnisecret.utils.Config
+import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import io.github.quantones.harpocrate.jnisecret.utils.JniInterfaceUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -25,6 +27,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
         mkdirGeneratedSouuceDir()
         val jni = buildJniInterface(safeConfiguration)
         saveJniInterface(safeConfiguration, jni)
+        setGitIgnore(safeConfiguration)
     }
 
     private fun mkdirGeneratedSouuceDir() {
@@ -62,7 +65,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
 
     private fun saveJniInterface(configuration: JniSecretConfiguration, content: String) {
         val packageDir = configuration.getPackageName().replace('.', '/').plus("/")
-        val dir = File("${project.projectDir}${Config.SRC_DIR}${Config.JAVA_DIR}/$packageDir")
+        val dir = File("${project.projectDir}${Config.SRC_DIR}${Config.JAVA_DIR}$packageDir")
 
         if(!dir.exists()) {
             dir.mkdirs()
@@ -70,5 +73,14 @@ open class CreateJniInterfaceTask: DefaultTask() {
         val file = File(dir, "${configuration.className}.kt")
         file.writeText(content)
         file.createNewFile()
+    }
+
+    private fun setGitIgnore(configuration: JniSecretConfiguration) {
+        val packageDir = configuration.getPackageName().replace('.', '/').plus("/")
+        val fileLocation = ".${Config.SRC_DIR}${Config.JAVA_DIR}$packageDir${configuration.className}.kt"
+        GitIgnoreUtils.addToProjectGitIgnore(
+            project,
+            fileLocation
+        )
     }
 }

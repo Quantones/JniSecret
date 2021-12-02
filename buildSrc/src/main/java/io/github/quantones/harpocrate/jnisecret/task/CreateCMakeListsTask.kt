@@ -25,13 +25,18 @@ open class CreateCMakeListsTask: DefaultTask() {
             )
 
         val file = File("${project.projectDir}", Config.CMAKE_FILENAME)
-        file.writeText(content)
-        file.createNewFile()
 
-        GitIgnoreUtils.setGitIgnore(
-            "${project.projectDir}",
-            GitIgnoreUtils.GITIGNORE_CMAKELISTS
-        )
+        if(!file.exists()) {
+            file.createNewFile()
+        }
+
+        if(!file.readText().contains(content)) {
+            file.appendText(content)
+        }
+
+        GitIgnoreUtils.addToProjectGitIgnore(
+            project,
+            GitIgnoreUtils.GITIGNORE_CMAKELISTS)
     }
 
 }

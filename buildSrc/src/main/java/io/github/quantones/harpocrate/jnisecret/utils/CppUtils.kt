@@ -11,7 +11,7 @@ object CppUtils {
     private val cppHeaders = """
         #include <jni.h>
         #include <string>
-    """.trim()
+    """.trimIndent()
 
     private val cppAlphaClass = """
         class Alpha : public std::string
@@ -30,17 +30,16 @@ object CppUtils {
                 return *this;
             }
         };
-    """.trim()
+    """.trimIndent()
 
     private val cppStringFunction = """
         extern "C" JNIEXPORT jstring
         JNICALL
         Java_${packageNameHolder}_${classNameHolder}_$keyHolder(JNIEnv *env, jobject object) {
-            Alpha str("");
             std::string value = "$valueHolder";
             return env->NewStringUTF(value.c_str());
         }
-    """.trim()
+    """.trimIndent()
 
     private val cppAlphaFunction = """
         extern "C" JNIEXPORT jstring
@@ -50,7 +49,7 @@ object CppUtils {
             std::string myStr = str.$alphaAddHolder;
             return env->NewStringUTF(myStr.c_str());
         }
-    """.trim()
+    """.trimIndent()
 
     fun transformPackageName(packageName: String): String {
         return packageName.replace('.', '_').toLowerCase()

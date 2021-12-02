@@ -29,7 +29,7 @@ open class CreateCppTask: DefaultTask() {
         configuration?.let {
             val content = buildCppContent(it)
             saveCppFile(content)
-            createGitIgnore()
+            setGitIgnore()
         }
     }
 
@@ -54,7 +54,7 @@ open class CreateCppTask: DefaultTask() {
     }
 
     private fun saveCppFile(content: String) {
-        val destDir = File("${project.projectDir}${Config.SRC_DIR}/${Config.CPP_DIR}")
+        val destDir = File("${project.projectDir}${Config.SRC_DIR}${Config.CPP_DIR}")
 
         if(!destDir.exists()) {
             destDir.mkdirs()
@@ -65,9 +65,12 @@ open class CreateCppTask: DefaultTask() {
         cppFile.createNewFile()
     }
 
-    private fun createGitIgnore() {
-        val file = File("${project.projectDir}${Config.SRC_DIR}/${Config.CPP_DIR}", GitIgnoreUtils.GITIGNORE_FILENAME)
+    private fun setGitIgnore() {
+        GitIgnoreUtils.addToProjectGitIgnore(
+            project,
+            "${Config.SRC_DIR}${Config.CPP_DIR}")
+        /*val file = File("${project.projectDir}", GitIgnoreUtils.GITIGNORE_FILENAME)
         file.writeText(GitIgnoreUtils.GITINGORE_CPP)
-        file.createNewFile()
+        file.createNewFile()*/
     }
 }
