@@ -3,6 +3,10 @@
 
 JniSecret is an Android gradle plugin which help you to store your sensitive data into a native cpp file which will be compile by the NDK. It avoid you to put data like ApiKey or secrets into the BuildConfig class which will be easily readable in your apk.
 
+## Prerequisites
+
+You must have a NDK and CMake installed in your Android Studio.
+
 ## Installation
 
 In your root build.gradle:
@@ -65,13 +69,23 @@ In your project build.gradle:
 ```
 
 android {
+
+    ndkVersion "YourNDKVersion"
+
     flavorDimensions "ENV"
+
     productFlavors {
         dev {
             dimension "ENV"
         }
         prod {
             dimension "ENV"
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("CMakeLists.txt")
         }
     }
 }

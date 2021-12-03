@@ -23,7 +23,6 @@ object GitIgnoreUtils {
     }
 
     fun addToProjectGitIgnore(project: Project, toAdd: String, create: Boolean = true) {
-        println(project.projectDir)
         val file = File("${project.projectDir}", GITIGNORE_FILENAME)
 
         if(!file.exists() && create) {

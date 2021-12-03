@@ -1,11 +1,11 @@
 package io.github.quantones.harpocrate.jnisecret.task
 
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.quantones.harpocrate.jnisecret.exceptions.NoConfigurationException
 import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import io.github.quantones.harpocrate.jnisecret.utils.JniInterfaceUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
@@ -22,7 +22,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
 
     @TaskAction
     fun createJniInterface() {
-        val safeConfiguration = configuration ?: throw GradleException("No configuration found")
+        val safeConfiguration = configuration ?: throw NoConfigurationException()
         mkdirGeneratedSouuceDir()
         val jni = buildJniInterface(safeConfiguration)
         saveJniInterface(safeConfiguration, jni)

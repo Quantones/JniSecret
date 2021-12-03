@@ -1,11 +1,11 @@
 package io.github.quantones.harpocrate.jnisecret.task
 
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.quantones.harpocrate.jnisecret.exceptions.NoConfigurationException
 import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.CppUtils
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
@@ -24,7 +24,7 @@ open class CreateCppTask: DefaultTask() {
     @TaskAction
     fun createCppFile() {
         if(configuration == null) {
-            throw GradleException("No configuration found")
+            throw NoConfigurationException()
         }
         configuration?.let {
             val content = buildCppContent(it)

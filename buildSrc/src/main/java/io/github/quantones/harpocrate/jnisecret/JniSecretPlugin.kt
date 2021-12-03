@@ -1,23 +1,24 @@
 package io.github.quantones.harpocrate.jnisecret
 
-import com.android.build.gradle.internal.dsl.ExternalNativeBuild
-import com.android.build.gradle.internal.dsl.ExternalNativeCmakeOptions
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretEntries
+import io.github.quantones.harpocrate.jnisecret.exceptions.NoExternalBuildException
 import io.github.quantones.harpocrate.jnisecret.task.CreateCMakeListsTask
 import io.github.quantones.harpocrate.jnisecret.task.CreateCppTask
 import io.github.quantones.harpocrate.jnisecret.task.CreateJniInterfaceTask
-import io.github.quantones.harpocrate.jnisecret.utils.CMakeListsUtils
-import io.github.quantones.harpocrate.jnisecret.utils.Config
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import java.io.File
 
 class JniSecretPlugin : Plugin<Project> {
 
-    private val EXTENSION_NAME = "jniSecret"
+    companion object {
+        const val EXTENSION_NAME = "jniSecret"
+        const val CHECK_EXTERNAL_NATIVE_TASK = "verifyExternalNativeBuild"
+    }
 
     override fun apply(project: Project) {
+
+
         //
         // Plugin configuration
         //
@@ -26,8 +27,19 @@ class JniSecretPlugin : Plugin<Project> {
         val configuration = project.extensions.create(EXTENSION_NAME, JniSecretConfiguration::class.java, secrets)
 
         //
-        // Task creation
+        // Task configuration
         //
+
+        project.tasks.register(CHECK_EXTERNAL_NATIVE_TASK) { t ->
+            t.group = EXTENSION_NAME
+            t.doFirst {
+                val cmakePath = project.android().externalNativeBuild.cmake.path
+                if(configuration.generateCMake && cmakePath == null) {
+                    throw NoExternalBuildException()
+                }
+            }
+        }
+
         project.android().productFlavors.all { pf ->
             project.tasks.register("buildJniInterface${pf.name[0].toUpperCase()+pf.name.substring(1)}", CreateJniInterfaceTask::class.java) { t ->
                 t.group = EXTENSION_NAME
@@ -76,28 +88,31 @@ class JniSecretPlugin : Plugin<Project> {
 
 
             if (configuration.generateCMake) {
-
+                // buildCmake -> preBuild
                 project.tasks.getByName(preBuildTask) { t ->
                     t.dependsOn(buildCmakeTask)
                 }
 
+                // buildJniInterface -> buildCMake
                 project.tasks.getByName(buildCmakeTask) { t ->
                     t.dependsOn(buildJniInterfaceTask)
                 }
+
             } else {
+                // buildJniInterface -> preBuild
                 project.tasks.getByName(preBuildTask) { t ->
                     t.dependsOn(buildJniInterfaceTask)
                 }
             }
 
+            //  buildCpp -> buildJniInterface
             project.tasks.getByName(buildJniInterfaceTask) { t ->
                 t.dependsOn(buildCppFileTask)
             }
-        }
 
-        val file = File("${project.projectDir}/${Config.CMAKE_FILENAME}")
-        if(file.exists()) {
-            project.android().externalNativeBuild.cmake.path = file
+            project.tasks.getByName(buildCppFileTask) { t ->
+                t.dependsOn(CHECK_EXTERNAL_NATIVE_TASK)
+            }
         }
     }
 }
