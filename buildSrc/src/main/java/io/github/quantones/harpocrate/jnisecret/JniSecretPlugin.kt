@@ -53,8 +53,7 @@ class JniSecretPlugin : Plugin<Project> {
                     .replace("Debug", "")
                     .replace("Release", "")
 
-                val outJniDir = File("${project.buildDir}/generated/source/JniSecret/${flavorName}/com/harpocrate/sample/")
-                val jniFile = File(outJniDir, "JniSecret.kt")
+                val outJniDir = File("${project.buildDir}/generated/source/JniSecret/${flavorName}/")
 
                 val jniTask = project.tasks.register(
                     "buildJniInterface${variant.name.capitalize()}",
@@ -64,9 +63,10 @@ class JniSecretPlugin : Plugin<Project> {
                     t.doFirst {
                         t.configuration = configuration
                         t.flavor = flavorName
+                        t.outDir = outJniDir
                     }
                     t.doLast {
-                        variant.addJavaSourceFoldersToModel(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
+                        variant.addJavaSourceFoldersToModel(outJniDir)
                     }
                 }
 
@@ -116,14 +116,16 @@ class JniSecretPlugin : Plugin<Project> {
                 // verifyExternalNativeBuild -> buildCpp
                 cppTask.dependsOn(checkCmakeTask)
 
+                jniTask.dependsOn(cppTask)
+
 
                 // Create JNI interface into build/generated dir
 
-                /*variant.registerJavaGeneratingTask(
+                variant.registerJavaGeneratingTask(
                     jniTask,
                     outJniDir
                 )
-
+                /*
                 val kotlinCompileTask =
                     project.tasks.findByName("compile${variant.name.capitalize()}Kotlin") as? SourceTask
                 if (kotlinCompileTask != null) {
