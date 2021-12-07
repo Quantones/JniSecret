@@ -13,7 +13,8 @@ ext.plugin = [
 
 ext.lib = [
         gradle : "com.android.tools.build:gradle:$versions.gradle",
-        kotlin_std_lib : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version"
+        kotlin_std_lib : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version",
+        kotlin_gradle: "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin_version"
 ]
 
 ext.publish = [

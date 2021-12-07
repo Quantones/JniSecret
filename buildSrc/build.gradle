@@ -53,4 +53,5 @@ pluginBundle {
 dependencies {
     implementation lib.kotlin_std_lib
     implementation lib.gradle
+    implementation lib.kotlin_gradle
 }

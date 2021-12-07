@@ -1,5 +1,6 @@
 package io.github.quantones.harpocrate.jnisecret
 
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretEntries
 import io.github.quantones.harpocrate.jnisecret.exceptions.NoExternalBuildException
@@ -8,6 +9,7 @@ import io.github.quantones.harpocrate.jnisecret.task.CreateCppTask
 import io.github.quantones.harpocrate.jnisecret.task.CreateJniInterfaceTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
 
 class JniSecretPlugin : Plugin<Project> {
 
@@ -26,92 +28,127 @@ class JniSecretPlugin : Plugin<Project> {
         val secrets = project.container(JniSecretEntries::class.java)
         val configuration = project.extensions.create(EXTENSION_NAME, JniSecretConfiguration::class.java, secrets)
 
-        //
-        // Task configuration
-        //
+        project.afterEvaluate {
+            //
+            // Task configuration
+            //
 
-        project.tasks.register(CHECK_EXTERNAL_NATIVE_TASK) { t ->
-            t.group = EXTENSION_NAME
-            t.doFirst {
-                val cmakePath = project.android().externalNativeBuild.cmake.path
-                if(configuration.generateCMake && cmakePath == null) {
-                    throw NoExternalBuildException()
-                }
-            }
-        }
-
-        project.android().productFlavors.all { pf ->
-            project.tasks.register("buildJniInterface${pf.name[0].toUpperCase()+pf.name.substring(1)}", CreateJniInterfaceTask::class.java) { t ->
+            val checkCmakeTask = project.tasks.register(CHECK_EXTERNAL_NATIVE_TASK) { t ->
                 t.group = EXTENSION_NAME
                 t.doFirst {
-                    t.configuration = configuration
-                    t.flavor = pf.name
-                }
-            }
-            project.tasks.register("buildCppFile${pf.name[0].toUpperCase()+pf.name.substring(1)}", CreateCppTask::class.java) { t ->
-                t.group = EXTENSION_NAME
-                t.doFirst {
-                    t.configuration = configuration
-                    t.flavor = pf.name
+                    val cmakePath = project.android().externalNativeBuild.cmake.path
+                    if(configuration.generateCMake && cmakePath == null) {
+                        throw NoExternalBuildException()
+                    }
                 }
             }
 
-            project.tasks.register(
-                "buildCMake${pf.name[0].toUpperCase() + pf.name.substring(1)}",
-                CreateCMakeListsTask::class.java
-            ) { t ->
-                t.group = EXTENSION_NAME
-                t.doFirst {
-                    t.configuration = configuration
-                }
-            }
-        }
+            //
+            // Task
+            //
 
-        //
-        // Task orchestration
-        //
+            project.android().applicationVariants().all { variant ->
 
-        project.android().applicationVariants().all {
-            var flavorName = it.name
-                .replace("Debug", "")
-                .replace("Release", "")
-            flavorName = flavorName[0].toUpperCase() + flavorName.substring(1)
+                val flavorName = variant.name
+                    .replace("Debug", "")
+                    .replace("Release", "")
 
-            val preBuildTask =
-                "pre${it.name[0].toUpperCase() + it.name.substring(1)}Build"
-            val buildJniInterfaceTask =
-                "buildJniInterface$flavorName"
-            val buildCppFileTask =
-                "buildCppFile$flavorName"
-            val buildCmakeTask =
-                "buildCMake$flavorName"
+                val outJniDir = File("${project.buildDir}/generated/source/JniSecret/${flavorName}/com/harpocrate/sample/")
+                val jniFile = File(outJniDir, "JniSecret.kt")
 
-
-            if (configuration.generateCMake) {
-                // buildCmake -> preBuild
-                project.tasks.getByName(preBuildTask) { t ->
-                    t.dependsOn(buildCmakeTask)
+                val jniTask = project.tasks.register(
+                    "buildJniInterface${variant.name.capitalize()}",
+                    CreateJniInterfaceTask::class.java
+                ) { t ->
+                    t.group = EXTENSION_NAME
+                    t.doFirst {
+                        t.configuration = configuration
+                        t.flavor = flavorName
+                    }
+                    t.doLast {
+                        variant.addJavaSourceFoldersToModel(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
+                    }
                 }
 
-                // buildJniInterface -> buildCMake
-                project.tasks.getByName(buildCmakeTask) { t ->
-                    t.dependsOn(buildJniInterfaceTask)
+                val cppTask = project.tasks.register(
+                    "buildCppFile${variant.name.capitalize()}",
+                    CreateCppTask::class.java
+                ) { t ->
+                    t.group = EXTENSION_NAME
+                    t.doFirst {
+                        t.configuration = configuration
+                        t.flavor = flavorName
+                    }
                 }
 
-            } else {
-                // buildJniInterface -> preBuild
-                project.tasks.getByName(preBuildTask) { t ->
-                    t.dependsOn(buildJniInterfaceTask)
+                val makeTask = project.tasks.register(
+                    "buildCMake${variant.name.capitalize()}",
+                    CreateCMakeListsTask::class.java
+                ) { t ->
+                    t.group = EXTENSION_NAME
+                    t.doFirst {
+                        t.configuration = configuration
+                    }
                 }
-            }
 
-            //  buildCpp -> buildJniInterface
-            project.tasks.getByName(buildJniInterfaceTask) { t ->
-                t.dependsOn(buildCppFileTask)
-            }
+                val preBuildTaskName =
+                    "pre${variant.name.capitalize()}Build"
+                val buildJniInterfaceTask =
+                    "buildJniInterface$flavorName"
+                val buildCppFileTask =
+                    "buildCppFile$flavorName"
+                val buildCmakeTask =
+                    "buildCMake$flavorName"
 
-            project.tasks.getByName(buildCppFileTask) { t ->
-                t.dependsOn(CHECK_EXTERNAL_NATIVE_TASK)
+
+                val preBuildTask = project.tasks.getByName(preBuildTaskName)
+
+                if (configuration.generateCMake) {
+                    // buildCmake -> preBuild
+                    preBuildTask.dependsOn(makeTask)
+                    // buildJniInterface -> buildCMake
+                    makeTask.dependsOn(cppTask)
+
+                } else {
+                    // buildJniInterface -> preBuild
+                   preBuildTask.dependsOn(cppTask)
+                }
+                // verifyExternalNativeBuild -> buildCpp
+                cppTask.dependsOn(checkCmakeTask)
+
+
+                // Create JNI interface into build/generated dir
+
+                /*variant.registerJavaGeneratingTask(
+                    jniTask,
+                    outJniDir
+                )
+
+                val kotlinCompileTask =
+                    project.tasks.findByName("compile${variant.name.capitalize()}Kotlin") as? SourceTask
+                if (kotlinCompileTask != null) {
+                    kotlinCompileTask.dependsOn(jniTask)
+                    println("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/")
+
+                    val srcSet = project.objects.sourceDirectorySet("jnisecret", "jnisecret")
+                        .srcDir(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
+                    kotlinCompileTask.source = srcSet
+
+                    project.android().sourceSets.create("jniSecret${variant.name}") {
+                        val set =
+                            setOf(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
+                        it.java.setSrcDirs(set)
+                        it.java.include("*.kt")
+                    }
+                    project.android().sourceSets.getByName("main") {
+                        it.java.srcDir(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
+                        it.java.include("*.kt")
+
+                        it.java.srcDirs.forEach {
+                            println(it.path)
+                        }
+                    }
+                }*/
             }
         }
     }
