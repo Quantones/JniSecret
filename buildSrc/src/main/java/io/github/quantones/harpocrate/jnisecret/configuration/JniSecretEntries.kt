@@ -1,15 +1,14 @@
 package io.github.quantones.harpocrate.jnisecret.configuration
 
-open class JniSecretEntries(val name: String) {
+import org.gradle.api.tasks.Input
 
-    private var secrets: MutableMap<String, String> = mutableMapOf()
+open class JniSecretEntries(@Input val name: String) {
+
+    @Input
+    var secrets: MutableMap<String, String> = mutableMapOf()
 
     fun secret(name: String, value: String) {
         secrets[name] = value
-    }
-
-    fun getSecrets(): Map<String, String> {
-        return secrets
     }
 
 }

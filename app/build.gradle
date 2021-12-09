@@ -59,13 +59,13 @@ jniSecret {
     generateCMake true
 
     defaultConfig {
-        secret("shared", readProperty("SECRET_SHARED"))
+        secret("shareded", readProperty("SECRET_SHARED"))
         secret("modifyByDev", readProperty("SECRET_SHARED"))
     }
 
     productFlavors {
         dev {
-            secret("key1", readProperty("SECRET_DEV"))
+            secret("key", readProperty("SECRET_DEV"))
             secret("modifyByDev", readProperty("SECRET_MODIFIED"))
         }
         preprod {

@@ -60,8 +60,9 @@ class JniSecretPlugin : Plugin<Project> {
                     CreateJniInterfaceTask::class.java
                 ) { t ->
                     t.group = EXTENSION_NAME
+                    t.configuration = configuration
                     t.doFirst {
-                        t.configuration = configuration
+                        //t.configuration
                         t.flavor = flavorName
                         t.outDir = outJniDir
                     }

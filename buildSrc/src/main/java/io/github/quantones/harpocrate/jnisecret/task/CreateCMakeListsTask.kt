@@ -6,14 +6,14 @@ import io.github.quantones.harpocrate.jnisecret.utils.CMakeListsUtils
 import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 open class CreateCMakeListsTask: DefaultTask() {
 
-    @Input
+    @Nested
     @Optional
     var configuration: JniSecretConfiguration? = null
 

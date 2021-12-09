@@ -2,17 +2,14 @@ package io.github.quantones.harpocrate.jnisecret.task
 
 import com.squareup.kotlinpoet.*
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
-import io.github.quantones.harpocrate.jnisecret.exceptions.NoConfigurationException
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
+import org.gradle.work.InputChanges
 import java.io.File
 
-open class CreateJniInterfaceTask: DefaultTask() {
+abstract class CreateJniInterfaceTask: DefaultTask() {
 
-    @Input
+    @Nested
     @Optional
     var configuration: JniSecretConfiguration? = null
 
@@ -24,19 +21,18 @@ open class CreateJniInterfaceTask: DefaultTask() {
     var outDir: File? = null
 
     @TaskAction
-    fun createJniInterface() {
-        val safeConfiguration = configuration ?: throw NoConfigurationException()
-        saveJniInterface(safeConfiguration)
+    fun createJniInterface(inputChanged: InputChanges) {
+        saveJniInterface(configuration!!)
     }
 
     private fun saveJniInterface(configuration: JniSecretConfiguration) {
 
         val flavors = configuration.productFlavors.first { it.name == flavor }
 
-        val functions = flavors.getSecrets()
+        val functions = flavors.secrets
             .let { secretsFlavor ->
                 val mutableSecret = secretsFlavor.toMutableMap()
-                configuration.defaultConfig.getSecrets().forEach { secretDefault ->
+                configuration.defaultConfig.secrets.forEach { secretDefault ->
                     if(!mutableSecret.containsKey(secretDefault.key)) {
                         mutableSecret[secretDefault.key] = secretDefault.value
                     }
@@ -50,7 +46,7 @@ open class CreateJniInterfaceTask: DefaultTask() {
             }
 
         val kotlin =
-            FileSpec.builder(configuration.packagename, configuration.className)
+            FileSpec.builder(configuration.packageName, configuration.className)
                 .addType(TypeSpec.classBuilder(configuration.className)
                     .addInitializerBlock(CodeBlock.builder()
                         .addStatement("System.loadLibrary(%S)", configuration.className)
