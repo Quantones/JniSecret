@@ -5,9 +5,7 @@ buildscript {
     repositories {
         mavenCentral()
         google()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        maven { url "https://plugins.gradle.org/m2/" }
 
     }
 
@@ -53,4 +51,5 @@ pluginBundle {
 dependencies {
     implementation lib.kotlin_std_lib
     implementation lib.gradle
+    implementation lib.kotlinpoet
 }

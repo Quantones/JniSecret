@@ -6,14 +6,12 @@ import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.CppUtils
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import java.io.File
 
 open class CreateCppTask: DefaultTask() {
 
-    @Input
+    @Nested
     @Optional
     var configuration: JniSecretConfiguration? = null
 
@@ -21,8 +19,13 @@ open class CreateCppTask: DefaultTask() {
     @Optional
     var flavor: String? = null
 
+    @OutputDirectory
+    @Optional
+    var outDir: File? = null
+
     @TaskAction
     fun createCppFile() {
+
         if(configuration == null) {
             throw NoConfigurationException()
         }
@@ -34,35 +37,41 @@ open class CreateCppTask: DefaultTask() {
     }
 
     private fun buildCppContent(configuration: JniSecretConfiguration): String {
-        val packageName = CppUtils.transformPackageName(configuration.getPackageName())
+        val packageName = CppUtils.transformPackageName(configuration.packageName)
         val className = CppUtils.transformClassName(configuration.className)
         val values = configuration
-            .productFlavors.first { it.name == flavor }
-            .getSecrets()
-            .let { secretsFlavor ->
-                val mutableSecret = secretsFlavor.toMutableMap()
-                configuration.defaultConfig.getSecrets().forEach { secretDefault ->
-                    if(!mutableSecret.containsKey(secretDefault.key)) {
-                        mutableSecret[secretDefault.key] = secretDefault.value
-                    }
-                }
-                mutableSecret
+            .defaultConfig
+            .secrets
+            .map {
+                it.key to it.value
             }
-            .map { Pair(it.key, it.value) }
+            .toMap()
+            .let {
+                val mutableMap = it.toMutableMap()
+                configuration.productFlavors.findByName(flavor)?.secrets?.forEach { entry ->
+                    mutableMap[entry.key] = entry.value
+                }
+                mutableMap
+            }
+            .toList()
 
-        return CppUtils.getCppContent(packageName, className, values, configuration.getStoringType())
+        return CppUtils.getCppContent(packageName, className, values, configuration.storingType)
     }
 
     private fun saveCppFile(content: String) {
-        val destDir = File("${project.projectDir}${Config.SRC_DIR}${Config.CPP_DIR}")
 
-        if(!destDir.exists()) {
-            destDir.mkdirs()
+        outDir?.let {
+            if (!it.exists()) {
+                it.mkdirs()
+            }
+            val cppFile = File(it, Config.CPP_FILENAME)
+
+            if(!cppFile.exists() || (cppFile.exists() && cppFile.readText() != content)) {
+                cppFile.delete()
+                cppFile.writeText(content)
+                cppFile.createNewFile()
+            }
         }
-
-        val cppFile = File(destDir, Config.CPP_FILENAME)
-        cppFile.writeText(content)
-        cppFile.createNewFile()
     }
 
     private fun setGitIgnore() {

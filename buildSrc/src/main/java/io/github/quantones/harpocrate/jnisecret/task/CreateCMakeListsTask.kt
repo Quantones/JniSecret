@@ -6,16 +6,21 @@ import io.github.quantones.harpocrate.jnisecret.utils.CMakeListsUtils
 import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 open class CreateCMakeListsTask: DefaultTask() {
 
-    @Input
+    @Nested
     @Optional
     var configuration: JniSecretConfiguration? = null
+
+    @OutputDirectory
+    @Optional
+    var outDir: File? = null
 
     @TaskAction
     fun createCMakeLists() {
@@ -27,21 +32,18 @@ open class CreateCMakeListsTask: DefaultTask() {
                 Config.CPP_FILENAME
             )
 
-        val file = File("${project.projectDir}", Config.CMAKE_FILENAME)
+        val file = File(outDir, Config.CMAKE_FILENAME)
 
-        if(!file.exists()) {
-            file.createNewFile()
-        }
-
-        if(!file.readText().contains(content)) {
+        if(!file.exists() || (file.exists() && file.readText().contains(content)) ) {
             file.delete()
-            file.createNewFile()
             file.appendText(content)
+            file.createNewFile()
+
+            GitIgnoreUtils.addToProjectGitIgnore(
+                project,
+                GitIgnoreUtils.GITIGNORE_CMAKELISTS)
         }
 
-        GitIgnoreUtils.addToProjectGitIgnore(
-            project,
-            GitIgnoreUtils.GITIGNORE_CMAKELISTS)
     }
 
 }

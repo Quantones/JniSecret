@@ -1,88 +1,65 @@
 package io.github.quantones.harpocrate.jnisecret.task
 
+import com.squareup.kotlinpoet.*
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
 import io.github.quantones.harpocrate.jnisecret.exceptions.NoConfigurationException
-import io.github.quantones.harpocrate.jnisecret.utils.Config
-import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
-import io.github.quantones.harpocrate.jnisecret.utils.JniInterfaceUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
+import org.gradle.work.InputChanges
 import java.io.File
 
-open class CreateJniInterfaceTask: DefaultTask() {
+abstract class CreateJniInterfaceTask: DefaultTask() {
 
-    @Input
+    @Nested
     @Optional
     var configuration: JniSecretConfiguration? = null
 
     @Input
     var flavor: String = ""
 
+    @OutputDirectory
+    @Optional
+    var outDir: File? = null
+
     @TaskAction
-    fun createJniInterface() {
+    fun createJniInterface(inputChanged: InputChanges) {
         val safeConfiguration = configuration ?: throw NoConfigurationException()
-        mkdirGeneratedSouuceDir()
-        val jni = buildJniInterface(safeConfiguration)
-        saveJniInterface(safeConfiguration, jni)
-        setGitIgnore(safeConfiguration)
+        saveJniInterface(safeConfiguration)
     }
 
-    private fun mkdirGeneratedSouuceDir() {
-        val projBuildDir = project.buildDir
-        val generatedDir = "/generated/source/jniSecret"
-
-        val dir = File("$projBuildDir$generatedDir")
-
-        if(!dir.exists()) {
-            dir.mkdirs()
-        }
-    }
-
-    private fun buildJniInterface(configuration: JniSecretConfiguration): String {
+    private fun saveJniInterface(configuration: JniSecretConfiguration) {
 
         val flavors = configuration.productFlavors.first { it.name == flavor }
-        val functions = flavors.getSecrets()
+
+        val functions = flavors.secrets
             .let { secretsFlavor ->
                 val mutableSecret = secretsFlavor.toMutableMap()
-                configuration.defaultConfig.getSecrets().forEach { secretDefault ->
+                configuration.defaultConfig.secrets.forEach { secretDefault ->
                     if(!mutableSecret.containsKey(secretDefault.key)) {
                         mutableSecret[secretDefault.key] = secretDefault.value
                     }
                 }
                 mutableSecret
             }
-            .map { JniInterfaceUtils.getJniFunction(it.key) }
+            .map { FunSpec.builder(it.key)
+                .addModifiers(KModifier.EXTERNAL)
+                .returns(String::class)
+                .build()
+            }
 
-            .joinToString("\n\t")
+        val kotlin =
+            FileSpec.builder(configuration.packageName, configuration.className)
+                .addType(TypeSpec.classBuilder(configuration.className)
+                    .addInitializerBlock(CodeBlock.builder()
+                        .addStatement("System.loadLibrary(%S)", configuration.className)
+                        .build()
+                    )
+                    .addFunctions(functions).build()
+                )
+                .build()
 
-        val jni = JniInterfaceUtils.getJniInterface(
-            configuration.packagename,
-            configuration.className,
-            functions)
-
-        return jni
-    }
-
-    private fun saveJniInterface(configuration: JniSecretConfiguration, content: String) {
-        val packageDir = configuration.getPackageName().replace('.', '/').plus("/")
-        val dir = File("${project.projectDir}${Config.SRC_DIR}${Config.JAVA_DIR}$packageDir")
-
-        if(!dir.exists()) {
-            dir.mkdirs()
+        outDir?.let {
+            kotlin.writeTo(it)
         }
-        val file = File(dir, "${configuration.className}.kt")
-        file.writeText(content)
-        file.createNewFile()
-    }
-
-    private fun setGitIgnore(configuration: JniSecretConfiguration) {
-        val packageDir = configuration.getPackageName().replace('.', '/').plus("/")
-        val fileLocation = "${Config.SRC_DIR}${Config.JAVA_DIR}$packageDir${configuration.className}.kt"
-        GitIgnoreUtils.addToProjectGitIgnore(
-            project,
-            fileLocation
-        )
     }
 }

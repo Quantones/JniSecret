@@ -1,8 +1,8 @@
 package com.harpocrate.jnisecret
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.harpocrate.sample.JniSecret
 
 class MainActivity : AppCompatActivity() {

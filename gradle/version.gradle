@@ -2,7 +2,8 @@ ext.versions = [
         gradle : "7.0.2",
         kotlin_version: "1.4.31",
         maven_publish : "3.6.1",
-        plugin_publish : "0.18.0"
+        plugin_publish : "0.18.0",
+        kotlinpoet: "1.10.2"
 ]
 
 ext.plugin = [
@@ -13,7 +14,8 @@ ext.plugin = [
 
 ext.lib = [
         gradle : "com.android.tools.build:gradle:$versions.gradle",
-        kotlin_std_lib : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version"
+        kotlin_std_lib : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version",
+        kotlinpoet: "com.squareup:kotlinpoet:$versions.kotlinpoet"
 ]
 
 ext.publish = [
