@@ -128,9 +128,6 @@ class JniSecretPlugin : Plugin<Project> {
 
                 jniTask.dependsOn(cppTask)
 
-
-                // Create JNI interface into build/generated dir
-
                 variant.registerJavaGeneratingTask(
                     jniTask,
                     outJniDir

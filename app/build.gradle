@@ -69,7 +69,7 @@ jniSecret {
             secret("modifyByDev", readProperty("SECRET_MODIFIED"))
         }
         preprod {
-            secret("key1", readProperty("SECRET_PREPROD"))
+            secret("key", readProperty("SECRET_PREPROD"))
         }
     }
 }
