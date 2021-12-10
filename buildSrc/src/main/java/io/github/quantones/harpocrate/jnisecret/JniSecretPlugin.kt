@@ -7,6 +7,7 @@ import io.github.quantones.harpocrate.jnisecret.exceptions.NoExternalBuildExcept
 import io.github.quantones.harpocrate.jnisecret.task.CreateCMakeListsTask
 import io.github.quantones.harpocrate.jnisecret.task.CreateCppTask
 import io.github.quantones.harpocrate.jnisecret.task.CreateJniInterfaceTask
+import io.github.quantones.harpocrate.jnisecret.utils.Config
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -54,6 +55,8 @@ class JniSecretPlugin : Plugin<Project> {
                     .replace("Release", "")
 
                 val outJniDir = File("${project.buildDir}/generated/source/JniSecret/${flavorName}/")
+                val outCppDir = File("${project.projectDir}${Config.SRC_DIR}${Config.CPP_DIR}")
+                val outCmakeDir = File("${project.projectDir}")
 
                 val jniTask = project.tasks.register(
                     "buildJniInterface${variant.name.capitalize()}",
@@ -61,11 +64,14 @@ class JniSecretPlugin : Plugin<Project> {
                 ) { t ->
                     t.group = EXTENSION_NAME
                     t.configuration = configuration
-                    t.doFirst {
-                        //t.configuration
-                        t.flavor = flavorName
-                        t.outDir = outJniDir
+                    t.flavor = flavorName
+                    t.outDir = outJniDir
+
+                    val ktFile = File("$outJniDir/${configuration.packageName.replace(".", "/")}/", "${configuration.className}.kt")
+                    if(!ktFile.exists()) {
+                        t.outputs.upToDateWhen { false }
                     }
+
                     t.doLast {
                         variant.addJavaSourceFoldersToModel(outJniDir)
                     }
@@ -75,10 +81,14 @@ class JniSecretPlugin : Plugin<Project> {
                     "buildCppFile${variant.name.capitalize()}",
                     CreateCppTask::class.java
                 ) { t ->
+
                     t.group = EXTENSION_NAME
-                    t.doFirst {
-                        t.configuration = configuration
-                        t.flavor = flavorName
+                    t.configuration = configuration
+                    t.flavor = flavorName
+                    t.outDir = outCppDir
+
+                    if(!(File(outCppDir, Config.CPP_FILENAME).exists())) {
+                        t.outputs.upToDateWhen { false }
                     }
                 }
 
@@ -87,9 +97,8 @@ class JniSecretPlugin : Plugin<Project> {
                     CreateCMakeListsTask::class.java
                 ) { t ->
                     t.group = EXTENSION_NAME
-                    t.doFirst {
-                        t.configuration = configuration
-                    }
+                    t.configuration = configuration
+                    t.outDir = outCmakeDir
                 }
 
                 val preBuildTaskName =
@@ -126,32 +135,6 @@ class JniSecretPlugin : Plugin<Project> {
                     jniTask,
                     outJniDir
                 )
-                /*
-                val kotlinCompileTask =
-                    project.tasks.findByName("compile${variant.name.capitalize()}Kotlin") as? SourceTask
-                if (kotlinCompileTask != null) {
-                    kotlinCompileTask.dependsOn(jniTask)
-                    println("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/")
-
-                    val srcSet = project.objects.sourceDirectorySet("jnisecret", "jnisecret")
-                        .srcDir(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
-                    kotlinCompileTask.source = srcSet
-
-                    project.android().sourceSets.create("jniSecret${variant.name}") {
-                        val set =
-                            setOf(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
-                        it.java.setSrcDirs(set)
-                        it.java.include("*.kt")
-                    }
-                    project.android().sourceSets.getByName("main") {
-                        it.java.srcDir(File("${project.buildDir}/generated/source/jniSecret/dev/com/harpocrate/sample/"))
-                        it.java.include("*.kt")
-
-                        it.java.srcDirs.forEach {
-                            println(it.path)
-                        }
-                    }
-                }*/
             }
         }
     }

@@ -2,6 +2,7 @@ package io.github.quantones.harpocrate.jnisecret.task
 
 import com.squareup.kotlinpoet.*
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
+import io.github.quantones.harpocrate.jnisecret.exceptions.NoConfigurationException
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
 import org.gradle.work.InputChanges
@@ -22,7 +23,8 @@ abstract class CreateJniInterfaceTask: DefaultTask() {
 
     @TaskAction
     fun createJniInterface(inputChanged: InputChanges) {
-        saveJniInterface(configuration!!)
+        val safeConfiguration = configuration ?: throw NoConfigurationException()
+        saveJniInterface(safeConfiguration)
     }
 
     private fun saveJniInterface(configuration: JniSecretConfiguration) {

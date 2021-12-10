@@ -6,10 +6,7 @@ import io.github.quantones.harpocrate.jnisecret.utils.Config
 import io.github.quantones.harpocrate.jnisecret.utils.CppUtils
 import io.github.quantones.harpocrate.jnisecret.utils.GitIgnoreUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Nested
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import java.io.File
 
 open class CreateCppTask: DefaultTask() {
@@ -22,8 +19,13 @@ open class CreateCppTask: DefaultTask() {
     @Optional
     var flavor: String? = null
 
+    @OutputDirectory
+    @Optional
+    var outDir: File? = null
+
     @TaskAction
     fun createCppFile() {
+
         if(configuration == null) {
             throw NoConfigurationException()
         }
@@ -57,15 +59,19 @@ open class CreateCppTask: DefaultTask() {
     }
 
     private fun saveCppFile(content: String) {
-        val destDir = File("${project.projectDir}${Config.SRC_DIR}${Config.CPP_DIR}")
 
-        if(!destDir.exists()) {
-            destDir.mkdirs()
+        outDir?.let {
+            if (!it.exists()) {
+                it.mkdirs()
+            }
+            val cppFile = File(it, Config.CPP_FILENAME)
+
+            if(!cppFile.exists() || (cppFile.exists() && cppFile.readText() != content)) {
+                cppFile.delete()
+                cppFile.writeText(content)
+                cppFile.createNewFile()
+            }
         }
-
-        val cppFile = File(destDir, Config.CPP_FILENAME)
-        cppFile.writeText(content)
-        cppFile.createNewFile()
     }
 
     private fun setGitIgnore() {

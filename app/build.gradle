@@ -59,7 +59,7 @@ jniSecret {
     generateCMake true
 
     defaultConfig {
-        secret("shareded", readProperty("SECRET_SHARED"))
+        secret("shared", readProperty("SECRET_SHARED"))
         secret("modifyByDev", readProperty("SECRET_SHARED"))
     }
 
