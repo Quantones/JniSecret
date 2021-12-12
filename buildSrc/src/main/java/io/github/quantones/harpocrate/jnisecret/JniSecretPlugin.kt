@@ -21,6 +21,7 @@ class JniSecretPlugin : Plugin<Project> {
     companion object {
         const val EXTENSION_NAME = "jniSecret"
         const val CHECK_EXTERNAL_NATIVE_TASK = "verifyExternalNativeBuild"
+        const val CLEAN_TASK = "cleanJniSecret"
     }
 
     override fun apply(project: Project) {
@@ -43,6 +44,8 @@ class JniSecretPlugin : Plugin<Project> {
                 project,
                 configuration
             )
+
+            val cleanTask = cleanTask(project)
 
             project.android().applicationVariants().all { variant ->
 
@@ -94,6 +97,26 @@ class JniSecretPlugin : Plugin<Project> {
                 cppTask.dependsOn(checkCmakeTask)
 
                 jniTask.dependsOn(cppTask)
+            }
+
+            project.tasks.getByName("clean") { t ->
+                t.dependsOn(cleanTask)
+            }
+        }
+    }
+
+    private fun cleanTask(project: Project): TaskProvider<Task> {
+        return project.tasks.register(CLEAN_TASK) { t ->
+            t.group = EXTENSION_NAME
+            t.doFirst {
+                val cmakeFile = File("${project.projectDir}/${Config.CMAKE_FILENAME}")
+                if (cmakeFile.exists()) cmakeFile.delete()
+
+                val jniDir = File("${project.buildDir}/generated/source/JniSecret/")
+                if (jniDir.exists()) jniDir.deleteRecursively()
+
+                val cppDir = File("${project.projectDir}/${Config.SRC_DIR}${Config.CPP_DIR}")
+                if (cppDir.exists()) cppDir.deleteRecursively()
             }
         }
     }
