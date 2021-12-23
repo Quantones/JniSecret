@@ -3,6 +3,7 @@ package io.github.quantones.harpocrate.jnisecret.task
 import com.squareup.kotlinpoet.*
 import io.github.quantones.harpocrate.jnisecret.configuration.JniSecretConfiguration
 import io.github.quantones.harpocrate.jnisecret.exceptions.NoConfigurationException
+import io.github.quantones.harpocrate.jnisecret.utils.StoringType
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
 import org.gradle.work.InputChanges
@@ -41,9 +42,13 @@ abstract class CreateJniInterfaceTask: DefaultTask() {
                 }
                 mutableSecret
             }
-            .map { FunSpec.builder(it.key)
-                .addModifiers(KModifier.EXTERNAL)
-                .returns(String::class)
+            .map {
+                val funSpec = FunSpec.builder(it.key)
+                    .addModifiers(KModifier.EXTERNAL)
+                if(configuration.storingType == StoringType.PKCS12) {
+                    funSpec.addParameter("assetManager", ClassName("android.content.res","AssetManager"))
+                }
+                funSpec.returns(String::class)
                 .build()
             }
 

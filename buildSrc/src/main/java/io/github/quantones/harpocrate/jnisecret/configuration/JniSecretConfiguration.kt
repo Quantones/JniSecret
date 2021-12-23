@@ -9,7 +9,8 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 
 open class JniSecretConfiguration(
-    @Nested val productFlavors: NamedDomainObjectContainer<JniSecretEntries>
+    @Nested val productFlavors: NamedDomainObjectContainer<JniSecretEntries>,
+
 ) {
 
     @Input
@@ -21,11 +22,14 @@ open class JniSecretConfiguration(
     @Input
     var generateCMake: Boolean = false
 
-    @Nested
-    var defaultConfig: JniSecretEntries = JniSecretEntries(Config.DEFAULT_CONFIG_NAME)
-
     @Input
     var storingType: StoringType = StoringType.OBFUSCATED
+
+    @Nested
+    var certificate: JniSecretCertificate = JniSecretCertificate()
+
+    @Nested
+    var defaultConfig: JniSecretEntries = JniSecretEntries(Config.DEFAULT_CONFIG_NAME)
 
     fun productFlavors(configureClosure: Closure<*>) {
         this.productFlavors.configure(configureClosure)
@@ -33,6 +37,10 @@ open class JniSecretConfiguration(
 
     fun defaultConfig(config: Action<JniSecretEntries>) {
         config.execute(this.defaultConfig)
+    }
+
+    fun certificate(config: Action<JniSecretCertificate>) {
+        config.execute(this.certificate)
     }
 
 

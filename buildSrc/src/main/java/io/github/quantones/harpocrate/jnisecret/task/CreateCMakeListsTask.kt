@@ -27,6 +27,7 @@ open class CreateCMakeListsTask: DefaultTask() {
         val safeConfiguration = configuration ?: throw NoConfigurationException()
         val content = CMakeListsUtils
             .getFileContent(
+                safeConfiguration.storingType,
                 safeConfiguration.className,
                 "${project.projectDir}${Config.SRC_DIR}${Config.CPP_DIR}",
                 Config.CPP_FILENAME

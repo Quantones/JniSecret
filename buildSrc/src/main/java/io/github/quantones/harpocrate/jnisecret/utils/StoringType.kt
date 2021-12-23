@@ -6,7 +6,8 @@ enum class StoringType(val type: String) {
 
 
     BASIC("basic"),
-    OBFUSCATED("obfuscated");
+    OBFUSCATED("obfuscated"),
+    PKCS12("pkcs12");
 
     companion object {
         fun getByValue(type: String): StoringType {
